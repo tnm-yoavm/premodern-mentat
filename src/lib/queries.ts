@@ -248,6 +248,75 @@ export function getFormatStaples(minArchetypes = 3, limit = 200): StapleCard[] {
   }));
 }
 
+export type SearchHit =
+  | { kind: 'card'; name: string; type_line: string | null; href: string; deck_count: number }
+  | { kind: 'archetype'; key: string; display_name: string; deck_count: number; href: string };
+
+/** Autocomplete: match cards and archetypes by substring. Cards ranked by popularity. */
+export function searchSuggestions(query: string, limit = 10): SearchHit[] {
+  const q = query.trim();
+  if (q.length < 2) return [];
+  const db = getDb();
+  const prefixPattern = `${q.toLowerCase()}%`;
+  const substrPattern = `%${q.toLowerCase()}%`;
+
+  // Archetypes — match display_name or key.
+  const archRows = db
+    .prepare(
+      `SELECT key, display_name, deck_count
+       FROM archetypes
+       WHERE lower(display_name) LIKE ? OR lower(key) LIKE ?
+       ORDER BY
+         CASE WHEN lower(display_name) LIKE ? THEN 0 ELSE 1 END,
+         deck_count DESC
+       LIMIT ?`
+    )
+    .all(substrPattern, substrPattern, prefixPattern, limit) as Array<{
+    key: string;
+    display_name: string;
+    deck_count: number;
+  }>;
+
+  // Cards — rank by how many decks play them so popular cards surface first.
+  const cardRows = db
+    .prepare(
+      `SELECT dc.card_name as name,
+              COALESCE(c.type_line, '') as type_line,
+              COUNT(DISTINCT dc.deck_id) as deck_count
+       FROM deck_cards dc
+       LEFT JOIN cards c ON c.name = dc.card_name
+       WHERE lower(dc.card_name) LIKE ?
+       GROUP BY dc.card_name
+       ORDER BY
+         CASE WHEN lower(dc.card_name) LIKE ? THEN 0 ELSE 1 END,
+         deck_count DESC
+       LIMIT ?`
+    )
+    .all(substrPattern, prefixPattern, limit) as Array<{
+    name: string;
+    type_line: string;
+    deck_count: number;
+  }>;
+
+  const archHits: SearchHit[] = archRows.map((r) => ({
+    kind: 'archetype',
+    key: r.key,
+    display_name: r.display_name || archetypeDisplay(r.key),
+    deck_count: r.deck_count,
+    href: `/archetype/${encodeURIComponent(r.key)}`,
+  }));
+
+  const cardHits: SearchHit[] = cardRows.map((r) => ({
+    kind: 'card',
+    name: r.name,
+    type_line: r.type_line || null,
+    deck_count: r.deck_count,
+    href: `/card/${encodeURIComponent(r.name)}`,
+  }));
+
+  return [...archHits, ...cardHits].slice(0, limit * 2);
+}
+
 export function getLegalSets(): Array<{ code: string; name: string; released_at: string }> {
   const db = getDb();
   return db

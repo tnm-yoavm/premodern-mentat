@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { VT323 } from 'next/font/google';
 import Link from 'next/link';
+import { SearchBar } from '@/components/SearchBar';
 import './globals.css';
 
 const vt323 = VT323({
@@ -55,10 +56,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <span className="text-2xl tracking-[0.15em]">MENTAT</span>
               <span className="cursor-blink text-[var(--term-green-dim)]" aria-hidden />
             </Link>
+            <SearchBar />
             <nav className="flex gap-4 text-sm md:text-base">
               <Link href="/">Metagame</Link>
               <Link href="/staples">Staples</Link>
               <Link href="/format">Format</Link>
+              <Link href="/community">Community</Link>
               <Link href="/about">About</Link>
             </nav>
           </div>

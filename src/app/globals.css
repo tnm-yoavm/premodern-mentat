@@ -244,6 +244,113 @@ a:hover {
   opacity: 1;
 }
 
+/* Search bar */
+
+.search-wrap {
+  position: relative;
+  flex: 1 1 220px;
+  max-width: 360px;
+  min-width: 180px;
+}
+
+.search-input {
+  width: 100%;
+  background: var(--term-bg);
+  border: 1px solid var(--term-green-dark);
+  color: var(--term-green);
+  padding: 4px 10px;
+  font: inherit;
+  outline: none;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.search-input::placeholder {
+  color: var(--term-green-faint);
+}
+
+.search-input:focus {
+  border-color: var(--term-amber);
+  box-shadow: 0 0 8px rgba(255, 170, 0, 0.3);
+}
+
+.search-dropdown {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  right: 0;
+  background: var(--term-bg);
+  border: 1px solid var(--term-amber);
+  box-shadow: 0 0 14px rgba(255, 170, 0, 0.25);
+  max-height: 380px;
+  overflow-y: auto;
+  z-index: 60;
+}
+
+.search-empty {
+  padding: 8px 10px;
+  opacity: 0.6;
+  font-size: 0.9rem;
+}
+
+.search-option {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: baseline;
+  width: 100%;
+  text-align: left;
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed rgba(0, 153, 34, 0.25);
+  color: var(--term-green);
+  font: inherit;
+  cursor: pointer;
+}
+
+.search-option:last-child { border-bottom: none; }
+
+.search-option.is-active,
+.search-option:hover {
+  background: rgba(0, 255, 65, 0.08);
+  color: var(--term-amber);
+}
+
+.search-tag {
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 0 6px;
+  border: 1px solid var(--term-green-dark);
+  color: var(--term-green-dim);
+  flex-shrink: 0;
+}
+
+.search-option.is-active .search-tag,
+.search-option:hover .search-tag {
+  color: var(--term-amber);
+  border-color: var(--term-amber);
+}
+
+.tag-card { /* styled by .search-tag */ }
+.tag-archetype { /* styled by .search-tag */ }
+
+.search-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-sub {
+  opacity: 0.55;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .search-wrap { max-width: none; width: 100%; order: 3; }
+}
+
 /* Scrollbars */
 
 ::-webkit-scrollbar {
