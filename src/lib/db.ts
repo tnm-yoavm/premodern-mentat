@@ -85,8 +85,71 @@ CREATE TABLE IF NOT EXISTS banned_cards (
     banned_date TEXT,
     reason TEXT
 );
+
+-- Curated video playlists (admin-managed).
+CREATE TABLE IF NOT EXISTS video_playlists (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    slug TEXT UNIQUE NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    position INTEGER NOT NULL DEFAULT 0,
+    is_published INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS playlist_videos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    playlist_id INTEGER NOT NULL REFERENCES video_playlists(id) ON DELETE CASCADE,
+    youtube_id TEXT NOT NULL,
+    title TEXT,
+    creator TEXT,
+    note TEXT,
+    position INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_playlist_videos_playlist ON playlist_videos(playlist_id);
+
+-- Scryfall printings (one row per physical printing), for price tracking.
+CREATE TABLE IF NOT EXISTS scryfall_printings (
+    scryfall_id TEXT PRIMARY KEY,
+    oracle_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    set_code TEXT NOT NULL,
+    set_name TEXT,
+    collector_number TEXT,
+    released_at TEXT,
+    rarity TEXT,
+    image_normal TEXT,
+    is_legal_set INTEGER NOT NULL DEFAULT 0,
+    last_seen TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_scryfall_printings_oracle ON scryfall_printings(oracle_id);
+CREATE INDEX IF NOT EXISTS idx_scryfall_printings_name ON scryfall_printings(name);
+CREATE INDEX IF NOT EXISTS idx_scryfall_printings_legal ON scryfall_printings(is_legal_set);
+
+-- Daily price snapshots (one row per printing per day).
+CREATE TABLE IF NOT EXISTS card_prices (
+    scryfall_id TEXT NOT NULL,
+    date TEXT NOT NULL,
+    usd REAL,
+    usd_foil REAL,
+    usd_etched REAL,
+    eur REAL,
+    tix REAL,
+    PRIMARY KEY (scryfall_id, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_card_prices_date ON card_prices(date);
 `;
 
 export function initSchema(db: DB = getDb()): void {
   db.exec(SCHEMA);
+}
+
+/** Ensure new tables exist on existing databases. Safe to call repeatedly. */
+export function ensureSchema(): void {
+  initSchema();
 }

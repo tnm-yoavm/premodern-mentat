@@ -10,7 +10,8 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "migrate": "tsx scripts/migrate-v1-data.ts",
-    "stats": "tsx scripts/build-stats.ts"
+    "stats": "tsx scripts/build-stats.ts",
+    "prices:fetch": "tsx scripts/fetch-scryfall-prices.ts"
   },
   "dependencies": {
     "better-sqlite3": "^11.5.0",

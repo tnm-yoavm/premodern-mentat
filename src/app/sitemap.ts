@@ -10,6 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/staples`, lastModified: now, changeFrequency: 'daily', priority: 0.9 },
     { url: `${BASE}/format`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${BASE}/community`, lastModified: now, changeFrequency: 'weekly', priority: 0.6 },
+    { url: `${BASE}/videos`, lastModified: now, changeFrequency: 'weekly', priority: 0.6 },
     { url: `${BASE}/about`, lastModified: now, changeFrequency: 'monthly', priority: 0.3 },
   ];
 

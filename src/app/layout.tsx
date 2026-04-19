@@ -60,6 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <nav className="flex gap-4 text-sm md:text-base">
               <Link href="/">Metagame</Link>
               <Link href="/staples">Staples</Link>
+              <Link href="/videos">Videos</Link>
               <Link href="/format">Format</Link>
               <Link href="/community">Community</Link>
               <Link href="/about">About</Link>
