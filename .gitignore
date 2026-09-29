@@ -41,3 +41,6 @@ next-env.d.ts
 /data/decks/
 /data/card_db.json
 /data/scryfall_cards.json
+
+# local SQLite data
+/data/
